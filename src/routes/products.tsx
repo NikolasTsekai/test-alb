@@ -656,9 +656,9 @@ function ProductCard({
             </div>
           )}
 
-          {/* Quick-add hover button (only if in stock) */}
+          {/* Quick-add hover button (desktop only) */}
           {!product.soldOut && (
-            <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
+            <div className="hidden sm:block absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
               <button
                 onClick={handleQuickAdd}
                 className="w-full py-3.5 text-white text-[10px] uppercase tracking-[0.28em] font-medium flex items-center justify-center gap-2.5 transition-opacity hover:opacity-90"
@@ -704,7 +704,38 @@ function ProductCard({
             </span>
           )}
         </div>
-        <p className="text-[12px] text-muted-foreground leading-relaxed">{product.shortDesc}</p>
+        <p className="text-[12px] text-muted-foreground leading-relaxed mb-4 sm:mb-0">{product.shortDesc}</p>
+
+        {/* Mobile CTA — always visible on touch screens */}
+        {!product.soldOut && (
+          <button
+            onClick={handleQuickAdd}
+            className="sm:hidden w-full py-3.5 text-white text-[10px] uppercase tracking-[0.28em] font-medium flex items-center justify-center gap-2.5"
+            style={{
+              background: added
+                ? "linear-gradient(135deg, #3a7a3a 0%, #4caf50 100%)"
+                : "linear-gradient(135deg, #C5832B 0%, #D4AF37 100%)",
+            }}
+          >
+            {added ? (
+              <>
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 3L5 9l-3-3" />
+                </svg>
+                U Shtua
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M12 11v6M9 14h6" />
+                </svg>
+                Shto në Shportë
+              </>
+            )}
+          </button>
+        )}
       </TiltCard>
     </div>
   );
@@ -874,55 +905,71 @@ function ProductsPage() {
         <span className="font-mono text-[9px] uppercase tracking-[0.45em] text-honey block mb-5">
           Koleksioni i Plotë
         </span>
-        <h1 className="font-display text-[clamp(2.8rem,6vw,5rem)] leading-[1.04] tracking-tight">
-          Produkte Produktet
+        <h1 className="font-display text-[clamp(2rem,6vw,5rem)] leading-[1.04] tracking-tight">
+          Produkte
         </h1>
         <div className="w-12 h-px mt-6" style={{ background: "linear-gradient(90deg, #C5832B, #D4AF37)" }} />
       </section>
 
       {/* ── Filter Bar ── */}
       <div className="sticky top-[4.5rem] sm:top-20 z-40 bg-canvas/95 backdrop-blur-md border-b border-border">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 h-14 flex items-center justify-between gap-6">
-          {/* Category tabs */}
-          <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide">
-            {(
-              [
-                { key: "all", label: "Të gjitha" },
-                { key: "honey", label: "Mjaltë" },
-                { key: "nuts", label: "Arra & Bajame" },
-              ] as { key: Category; label: string }[]
-            ).map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => handleCategory(key)}
-                className={`relative flex-shrink-0 px-5 h-14 text-[10px] uppercase tracking-[0.22em] font-medium transition-colors duration-200 ${
-                  category === key
-                    ? "text-honey"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {label}
-                {category === key && (
-                  <span
-                    className="absolute bottom-0 left-0 right-0 h-px"
-                    style={{ background: "linear-gradient(90deg, #C5832B, #D4AF37)" }}
-                  />
-                )}
-              </button>
-            ))}
+        <div className="max-w-7xl mx-auto px-5 sm:px-8">
+          <div className="flex items-center justify-between gap-4 sm:h-14">
+            {/* Category tabs */}
+            <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide h-12 sm:h-14">
+              {(
+                [
+                  { key: "all", label: "Të gjitha" },
+                  { key: "honey", label: "Mjaltë" },
+                  { key: "nuts", label: "Arra & Bajame" },
+                ] as { key: Category; label: string }[]
+              ).map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => handleCategory(key)}
+                  className={`relative flex-shrink-0 px-4 sm:px-5 h-12 sm:h-14 text-[10px] uppercase tracking-[0.22em] font-medium transition-colors duration-200 ${
+                    category === key
+                      ? "text-honey"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {label}
+                  {category === key && (
+                    <span
+                      className="absolute bottom-0 left-0 right-0 h-px"
+                      style={{ background: "linear-gradient(90deg, #C5832B, #D4AF37)" }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Sort dropdown — desktop only */}
+            <select
+              value={sortKey}
+              onChange={handleSort}
+              aria-label="Renditja"
+              className="hidden sm:block appearance-none bg-transparent border border-border text-[10px] uppercase tracking-[0.18em] text-muted-foreground pl-3 py-1.5 pr-8 cursor-pointer hover:border-honey/50 transition-colors duration-200 focus:outline-none focus:border-honey flex-shrink-0"
+            >
+              <option value="default">Renditja: Parazgjedhur</option>
+              <option value="price_asc">Çmimi: Më i ulët</option>
+              <option value="price_desc">Çmimi: Më i lartë</option>
+            </select>
           </div>
 
-          {/* Sort dropdown */}
-          <select
-            value={sortKey}
-            onChange={handleSort}
-            aria-label="Renditja"
-            className="appearance-none bg-transparent border border-border text-[10px] uppercase tracking-[0.18em] text-muted-foreground pl-3 py-1.5 pr-8 cursor-pointer hover:border-honey/50 transition-colors duration-200 focus:outline-none focus:border-honey min-w-[160px] flex-shrink-0"
-          >
-            <option value="default">Renditja: Parazgjedhur</option>
-            <option value="price_asc">Çmimi: Më i ulët</option>
-            <option value="price_desc">Çmimi: Më i lartë</option>
-          </select>
+          {/* Sort dropdown — mobile only row */}
+          <div className="sm:hidden border-t border-border/50">
+            <select
+              value={sortKey}
+              onChange={handleSort}
+              aria-label="Renditja"
+              className="w-full appearance-none bg-transparent text-[10px] uppercase tracking-[0.18em] text-muted-foreground py-3 cursor-pointer focus:outline-none"
+            >
+              <option value="default">Renditja: Parazgjedhur</option>
+              <option value="price_asc">Çmimi: Më i ulët</option>
+              <option value="price_desc">Çmimi: Më i lartë</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -935,7 +982,7 @@ function ProductsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 sm:gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-10 md:gap-12">
             {filtered.map((product, i) => (
               <ProductCard
                 key={product.id}
